@@ -22,7 +22,7 @@ read_time = end_time - start_time
 print("Time to read file: {:.4f} seconds".format(read_time))
 #Splitting the dataset onto the training set and the test set
 X=df
-y = df['QUARTER'].astype(str) + '_' + df["REPORT_TYPE"].astype(str)
+y = df['QUARTER']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state = 42)
 #Specifying the columns that will be used for the encoding 
 encoder= ce.OrdinalEncoder(cols=['QUARTER', 'SURF_COND_DESC', 'REPORT_TYPE', 'WEATHER_DESC'])
@@ -31,7 +31,7 @@ X_train = encoder.fit_transform(X_train)
 X_test = encoder.transform(X_test)
 #Building the Decision Tree Classifier and measuring the time it takes
 start_time = time.time()
-clf_en = DecisionTreeClassifier(criterion='entropy', max_depth=4, random_state=0)
+clf_en = DecisionTreeClassifier(criterion='entropy', max_depth=13, random_state=0)
 #Fitting/Training the the Classifier using the training set 
 clf_en.fit(X_train, y_train)
 end_time = time.time()
@@ -49,14 +49,11 @@ y_pred_train_en = clf_en.predict(X_train)
 plt.rcParams['figure.figsize'] = (12, 8)
 plt.plot(y_pred_train_en)
 plt.show()
-#plt.rcParams['figure.figsize'] = (40, 30)
-#tree.plot_tree(clf_en.fit(X_train, y_train),filled=True)
-#plt.show()
 dot_data = tree.export_graphviz(clf_en, out_file=None, filled=True, feature_names=list(X_train.columns),
                                 class_names=clf_en.classes_)
 # Draw graph
 graph = graphviz.Source(dot_data, format="png") 
-graph.render("decision_tree_graphivz")
+graph.render("QUARTER_REPORT_TYPE")
 #Calculating the confusion matrix
 cm = confusion_matrix(y_test, y_pred_en)
 print('Confusion matrix\n\n', cm)
